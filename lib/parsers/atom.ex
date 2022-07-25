@@ -92,7 +92,17 @@ defmodule ElixirFeedParser.Parsers.Atom do
 
   defp feed_entry_url(entry) do
     url = entry |> element("link[@type='text/html' and @rel='alternate']", attr: "href")
-    links = entry |> elements("link", attr: "href")
+
+    links =
+      entry
+      |> XmlNode.map_children("link", fn l ->
+        cond do
+          XmlNode.attr(l, "type") == nil -> XmlNode.attr(l, "href")
+          XmlNode.attr(l, "type") =~ "image/" -> nil
+          true -> XmlNode.attr(l, "href")
+        end
+      end)
+      |> Enum.reject(&is_nil/1)
 
     if url do
       url
