@@ -5,8 +5,7 @@ defmodule ElixirFeedParser.Parsers.RSS2 do
 
   def can_parse?(xml) do
     xml
-    |> XmlNode.find("/rss")
-    |> XmlNode.attr("version") == "2.0"
+    |> XmlNode.find("/rss") != nil
   end
 
   def parse(xml) do
